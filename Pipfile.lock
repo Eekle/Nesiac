@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "49c342477cc605ffdd33f9b915a52cdee679db58248278f1d8946a6190ccc1c4"
+            "sha256": "056940f3149257243673151e22a41d5077f790b491dc53dd109d6227e05718e4"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -77,6 +77,14 @@
             ],
             "index": "pypi",
             "version": "==13.6.0"
+        },
+        "rust-demangler": {
+            "hashes": [
+                "sha256:2a2cdf400d1703dc73ae3aabb930dacb92772160b1dcb4ee2181a81878726948",
+                "sha256:a3e88032e691322d14cec137f7d9afbe44ac65a84217c599bd2cfe480ec8bd0f"
+            ],
+            "index": "pypi",
+            "version": "==1.0"
         }
     },
     "develop": {
