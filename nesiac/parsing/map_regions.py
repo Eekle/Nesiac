@@ -13,7 +13,7 @@ class MemoryRegion:
 
 def from_line(line: str) -> MemoryRegion | None:
     pieces = line.split()
-    if len(pieces) < 4:
+    if len(pieces) < 3:
         return None
 
     try:
@@ -37,7 +37,8 @@ def from_text(text: str) -> list[MemoryRegion]:
     regions = []  # type: list[MemoryRegion]
     for line in iter_lines:
         if reg := from_line(line):
-            regions.append(reg)
+            if reg.name != "*default*":
+                regions.append(reg)
         else:
             break
     return regions

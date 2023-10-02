@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import pathlib
 from elftools.elf.elffile import ELFFile, SymbolTableSection
-
+from cpp_demangle import demangle
 
 @dataclass(frozen=True)
 class ElfObject:
@@ -19,7 +19,11 @@ def from_elf(file: pathlib.Path) -> list[ElfObject]:
             return outlist
         for sym in symtab.iter_symbols():
             if sym.entry.st_info.type in ["STT_OBJECT", "STT_FUNC"]:
+                try:
+                    name = demangle(sym.name)
+                except ValueError:
+                    name = sym.name
                 outlist.append(
-                    ElfObject(sym.entry.st_value, sym.entry.st_size, sym.name)
+                    ElfObject(sym.entry.st_value, sym.entry.st_size, name)
                 )
     return outlist
