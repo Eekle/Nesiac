@@ -3,8 +3,6 @@ import pathlib
 from elftools.elf.elffile import ELFFile, SymbolTableSection
 import cpp_demangle
 import rust_demangler
-from rust_demangler.rust import TypeNotFoundError
-import string
 
 @dataclass(frozen=True)
 class ElfObject:
