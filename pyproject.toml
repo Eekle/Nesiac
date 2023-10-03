@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nesiac"
-version = "0.1.1"
+version = "0.1.2"
 description = "Memory usage visualiser for embedded applications"
 authors = ["Eekle"]
 license = "MIT"
