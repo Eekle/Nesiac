@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass
@@ -11,7 +12,7 @@ class MemoryRegion:
         return self.origin <= addr < (self.origin + self.length)
 
 
-def from_line(line: str) -> MemoryRegion | None:
+def from_line(line: str) -> Optional[MemoryRegion]:
     pieces = line.split()
     if len(pieces) < 3:
         return None

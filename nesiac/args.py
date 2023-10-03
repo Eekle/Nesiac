@@ -1,6 +1,6 @@
 import argparse
 import pathlib
-
+from typing import Optional
 import glob
 
 
@@ -20,9 +20,9 @@ class Args:
             type=pathlib.Path,
         )
         _parsed_args = _parser.parse_args()
-        efile = _parsed_args.elf_file  # type: pathlib.Path | None
-        mfile = _parsed_args.map_file  # type: pathlib.Path | None
-        dirpath = _parsed_args.directory  # type: pathlib.Path | None
+        efile = _parsed_args.elf_file  # type: Optional[pathlib.Path]
+        mfile = _parsed_args.map_file  # type: Optional[pathlib.Path]
+        dirpath = _parsed_args.directory  # type: Optional[pathlib.Path]
         if not efile and dirpath:
             globelf = glob.glob(str((dirpath / "*.elf").absolute()))
             globout = glob.glob(str((dirpath / "*.out").absolute()))

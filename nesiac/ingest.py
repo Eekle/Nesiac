@@ -1,4 +1,5 @@
 from dataclasses import replace
+from typing import Optional
 from elftools.elf.elffile import ELFFile
 from elftools.elf.elffile import Section, Segment
 
@@ -51,7 +52,7 @@ def ingest() -> list[RegionWithSections]:
     args = Args()
     regions = list(map(RegionWithSections, map_regions.from_text(args.map_text())))
 
-    def into_my_section_type(sec: Section) -> SectionWithObjects | None:
+    def into_my_section_type(sec: Section) -> Optional[SectionWithObjects]:
         # Check if the section takes up space in the binary
         if (sec.header.sh_flags & 2) == 0:
             return None
