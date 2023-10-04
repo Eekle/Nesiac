@@ -1,5 +1,3 @@
-[![PyPI version](https://badge.fury.io/py/nesiac.svg)](https://badge.fury.io/py/nesiac)
-
 # Overview
 
 Nesiac is a terminal tool for visualising memory usage in embedded programs.
