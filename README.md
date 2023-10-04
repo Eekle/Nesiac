@@ -10,9 +10,7 @@ As an example when run on the STM32 "HID_Standalone" project for STM32H747I-DISC
 
 # Installation
 
-Nesiac is very early in development, and supports only Windows (currently).
-
-It may be installed with pip via:
+Nesiac may be installed with pip via:
 
 `python -m pip install nesiac`
 
