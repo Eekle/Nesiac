@@ -16,6 +16,8 @@ It may be installed with pip via:
 
 `python -m pip install nesiac`
 
+The `nesiac` executable will then be made available in your python executables directory, which should be on your path.
+
 # Usage
 
 Nesiac requires two files to do its analysis:
