@@ -4,7 +4,7 @@ Nesiac is a terminal tool for visualising memory usage in embedded programs.
 
 As an example when run on the STM32 "HID_Standalone" project for STM32H747I-DISCO board:
 
-![Nesiac terminal output](docs/example.png)
+![image](https://github.com/Eekle/Nesiac/assets/96976531/e59df990-cb21-43a8-91d9-fda814f4189c)
 
 # Installation
 
@@ -38,3 +38,9 @@ RAM              0x0000000024000000 0x0000000000020000 xrw
 ITCMRAM          0x0000000000000000 0x0000000000010000 xrw
 *default*        0x0000000000000000 0xffffffffffffffff
 ```
+
+# Languages
+
+Nesiac will demangle C++ and Rust symbols when it finds them.
+
+![image](https://github.com/Eekle/Nesiac/assets/96976531/56d88964-cc35-405e-8396-6c1106c357b0)
