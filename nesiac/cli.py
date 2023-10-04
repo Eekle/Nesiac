@@ -206,7 +206,7 @@ def cli() -> None:
         layout["u"].update(grid)
         layout["l"].update(
             Text(
-                "  W/S: move between sections | Q/E: Scroll symbol table | Esc: Exit  ",
+                "  W/S: Move between sections | E/D: Scroll symbol table | Esc: Exit  ",
                 style="black on white",
             ),
         )
