@@ -17,6 +17,7 @@ rich = "^13.6.0"
 pyelftools = "^0.30"
 cpp-demangle = "^0.1.2"
 rust-demangler = "^1.0"
+getchlib = "^1.0.12"
 
 [tool.poetry.scripts]
 nesiac = 'nesiac.cli:cli'

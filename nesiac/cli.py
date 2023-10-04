@@ -1,4 +1,3 @@
-import msvcrt
 import time
 from rich.layout import Layout
 from rich.live import Live
@@ -6,9 +5,25 @@ from rich.text import Text
 from rich.tree import Tree
 from rich.table import Table
 from rich.console import Group, Console
+from typing import Optional
 from . import ingest
 from .args import Args
+import os
 
+if os.name == "nt":
+    import msvcrt
+    def get_key() -> Optional[int]:
+        if msvcrt.kbhit():
+            return msvcrt.getch()[0]
+        else:
+            return None
+else:
+    import getchlib
+    def get_key() -> Optional[int]:
+        stkey = getchlib.getkey(False) # type: Optional[str]
+        if stkey and len(stkey) == 1:
+            return ord(stkey)
+        return None
 
 class InteractiveRegions:
     def __init__(self, reg: list[ingest.RegionWithSections]) -> None:
@@ -213,31 +228,33 @@ def cli() -> None:
         return layout
 
     with Live(Layout(), auto_refresh=False) as live:
+        last_size = live.console.size
+        o_data.update_objs_per_page(live.console)
+        live.update(whole_thing(o_data), refresh=True)
         while True:
-            last_size = live.console.size
-            o_data.update_objs_per_page(live.console)
-            live.update(whole_thing(o_data), refresh=True)
 
-            while not msvcrt.kbhit():
+            if key := get_key():
+                if key == ord('w'):
+                    o_data.prev_section()
+                    live.update(whole_thing(o_data), refresh=True)
+                elif key == ord('s'):
+                    o_data.next_section()
+                    live.update(whole_thing(o_data), refresh=True)
+                elif key == ord('e'):
+                    o_data.prev_object_page()
+                    live.update(whole_thing(o_data), refresh=True)
+                elif key == ord('d'):
+                    o_data.next_object_page()
+                    live.update(whole_thing(o_data), refresh=True)
+                elif key == 27:  # Escape
+                    live.update("", refresh=True)
+                    exit(0)
+            else:
                 if live.console.size != last_size:
                     last_size = live.console.size
                     o_data.update_objs_per_page(live.console)
                     live.update(whole_thing(o_data), refresh=True)
                 time.sleep(5e-3)
-
-            key = msvcrt.getch()
-
-            if key == b"w":
-                o_data.prev_section()
-            elif key == b"s":
-                o_data.next_section()
-            elif key == b"e":
-                o_data.prev_object_page()
-            elif key == b"d":
-                o_data.next_object_page()
-            elif ord(key) == 27:  # Escape
-                live.update("", refresh=True)
-                exit(0)
 
 
 if __name__ == "__main__":

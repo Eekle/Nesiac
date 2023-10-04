@@ -25,6 +25,16 @@ files = [
 ]
 
 [[package]]
+name = "getchlib"
+version = "1.0.12"
+description = "Library for reading key presses"
+optional = false
+python-versions = "*"
+files = [
+    {file = "getchlib-1.0.12.tar.gz", hash = "sha256:a8c8dcdf513c67f51b752b821422115f1f8c649613aa3a6feeddfa9cad7a3150"},
+]
+
+[[package]]
 name = "markdown-it-py"
 version = "3.0.0"
 description = "Python port of markdown-it. Markdown parsing, done right!"
@@ -116,4 +126,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "510abe197b6a5082529b21f86a42905e68cdc6cf0ec0d93b9383385a7461b4ff"
+content-hash = "aeb7e95efbf0a2f853b76f525d7cf0ee466c03d0d367c3630ebeda8ef1f7e31e"
