@@ -300,7 +300,7 @@ def cli() -> None:
                         o_data.sort_by_size()
                     render()
                 elif key == 27:  # Escape
-                    render()
+                    live.update("", refresh=True)
                     exit(0)
             else:
                 if live.console.size != last_size:
