@@ -166,29 +166,13 @@ class InteractiveRegions:
     def sort_by_addr(self) -> None:
         original_selection = self.selected_section()
         self.sorted_by_size = False
-        def get_addr_or_default(s: ingest.SectionWithObjects, default: int) -> int:
-            if len(s.children) > 0:
-                return s.children[0].addr
-            else:
-                return default
 
         for region in self.regions:
             if len(region.children) == 0:
                 continue
             for section in region.children:
                 section.children.sort(key=lambda x: x.addr)
-            end_addr = (
-                max(
-                    [0] # Add a zero element so we always have a number here
-                    + [
-                        s.children[0].addr
-                        for s in region.children
-                        if len(s.children) > 0
-                    ]
-                )
-                + 1
-            )
-            region.children.sort(key=partial(get_addr_or_default, default=end_addr))
+            region.children.sort(key=lambda s: s.data.addr)
         self.set_selection_to(original_selection)
 
 
