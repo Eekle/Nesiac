@@ -201,7 +201,7 @@ def size_display(numbytes: int) -> str:
 def cli() -> None:
     o_data = InteractiveRegions(ingest.ingest())
 
-    def region_view(data: InteractiveRegions) -> Group:
+    def region_view(data: InteractiveRegions, compact: bool) -> Group:
         title = Text.assemble(
             str(Args().elf_file().parts[-1]),
             ", ",
@@ -210,10 +210,15 @@ def cli() -> None:
         )
         treeitems = []  # type: list[Tree]
         for reg in data.regions:
-            reg_tree = Tree(o_data.reg_section_text(reg), guide_style="bright_black")
-            for sec in reg.children:
-                reg_tree.add(o_data.section_text(sec, reg.data.length))
-            reg_tree.add(o_data.reg_totals_text(reg))
+            region_title = o_data.reg_section_text(reg)
+            is_selected = reg == o_data.selected_region()
+            if compact and not is_selected:
+                region_title.append(f" [{len(reg.children)}]", style="bright_green")
+            reg_tree = Tree(region_title, guide_style="bright_black")
+            if (not compact) or reg == o_data.selected_region():
+                for sec in reg.children:
+                    reg_tree.add(o_data.section_text(sec, reg.data.length))
+                reg_tree.add(o_data.reg_totals_text(reg))
             treeitems.append(reg_tree)
         return Group(title, *treeitems)
 
@@ -234,12 +239,15 @@ def cli() -> None:
 
         return table
 
-    def whole_thing(data: InteractiveRegions) -> Layout:
+    def whole_thing(data: InteractiveRegions, viewport_height: int) -> Layout:
         grid = Table.grid()
         grid.add_column()
         grid.add_column()
+        num_sections = len([s for reg in data.regions for s in reg.children])
+        full_tree_height = 1 + 2 * len(data.regions) + num_sections
+        compressed = full_tree_height >= viewport_height
         grid.add_row(
-            region_view(data),
+            region_view(data, compressed),
             obj_view(data),
         )
         grid.padding = 2
@@ -268,35 +276,37 @@ def cli() -> None:
     with Live(Layout(), auto_refresh=False) as live:
         last_size = live.console.size
         o_data.update_objs_per_page(live.console)
-        live.update(whole_thing(o_data), refresh=True)
+        def render():
+            live.update(whole_thing(o_data, live.console.height), refresh=True)
+        render()
         while True:
             if key := get_key():
                 if key == ord("w"):
                     o_data.prev_section()
-                    live.update(whole_thing(o_data), refresh=True)
+                    render()
                 elif key == ord("s"):
                     o_data.next_section()
-                    live.update(whole_thing(o_data), refresh=True)
+                    render()
                 elif key == ord("e"):
                     o_data.prev_object_page()
-                    live.update(whole_thing(o_data), refresh=True)
+                    render()
                 elif key == ord("d"):
                     o_data.next_object_page()
-                    live.update(whole_thing(o_data), refresh=True)
+                    render()
                 elif key == ord("q"):
                     if o_data.sorted_by_size:
                         o_data.sort_by_addr()
                     else:
                         o_data.sort_by_size()
-                    live.update(whole_thing(o_data), refresh=True)
+                    render()
                 elif key == 27:  # Escape
-                    live.update("", refresh=True)
+                    render()
                     exit(0)
             else:
                 if live.console.size != last_size:
                     last_size = live.console.size
                     o_data.update_objs_per_page(live.console)
-                    live.update(whole_thing(o_data), refresh=True)
+                    render()
                 time.sleep(5e-3)
 
 
