@@ -1,3 +1,4 @@
+from functools import partial
 import time
 from rich.layout import Layout
 from rich.live import Live
@@ -12,18 +13,22 @@ import os
 
 if os.name == "nt":
     import msvcrt
+
     def get_key() -> Optional[int]:
         if msvcrt.kbhit():
             return msvcrt.getch()[0]
         else:
             return None
+
 else:
     import getchlib
+
     def get_key() -> Optional[int]:
-        stkey = getchlib.getkey(False) # type: Optional[str]
+        stkey = getchlib.getkey(False)  # type: Optional[str]
         if stkey and len(stkey) == 1:
             return ord(stkey)
         return None
+
 
 class InteractiveRegions:
     def __init__(self, reg: list[ingest.RegionWithSections]) -> None:
@@ -32,8 +37,10 @@ class InteractiveRegions:
         self.s_ix = 0
         self.object_page = 0
         self.objects_per_page = 25
+        self.sorted_by_size = True
         if len(self.selected_region().children) == 0:
             self._next_region_with_children()
+        self.sort_by_size()
 
     def update_objs_per_page(self, con: Console):
         old = self.objects_per_page
@@ -46,6 +53,13 @@ class InteractiveRegions:
 
     def selected_section(self) -> ingest.SectionWithObjects:
         return self.selected_region().children[self.s_ix]
+
+    def set_selection_to(self, target: ingest.SectionWithObjects):
+        for search_r, region in enumerate(self.regions):
+            for search_s, section in enumerate(region.children):
+                if section == target:
+                    self.r_ix = search_r
+                    self.s_ix = search_s
 
     def _next_region_with_children(self) -> bool:
         for ix in range(self.r_ix + 1, len(self.regions)):
@@ -140,6 +154,43 @@ class InteractiveRegions:
             no_wrap=True,
         )
 
+    def sort_by_size(self) -> None:
+        original_selection = self.selected_section()
+        self.sorted_by_size = True
+        for region in self.regions:
+            for section in region.children:
+                section.children.sort(key=lambda x: x.size, reverse=True)
+            region.children.sort(key=lambda x: x.data.size, reverse=True)
+        self.set_selection_to(original_selection)
+
+    def sort_by_addr(self) -> None:
+        original_selection = self.selected_section()
+        self.sorted_by_size = False
+        def get_addr_or_default(s: ingest.SectionWithObjects, default: int) -> int:
+            if len(s.children) > 0:
+                return s.children[0].addr
+            else:
+                return default
+
+        for region in self.regions:
+            if len(region.children) == 0:
+                continue
+            for section in region.children:
+                section.children.sort(key=lambda x: x.addr)
+            end_addr = (
+                max(
+                    [0] # Add a zero element so we always have a number here
+                    + [
+                        s.children[0].addr
+                        for s in region.children
+                        if len(s.children) > 0
+                    ]
+                )
+                + 1
+            )
+            region.children.sort(key=partial(get_addr_or_default, default=end_addr))
+        self.set_selection_to(original_selection)
+
 
 def size_display(numbytes: int) -> str:
     megabyte = 1024 * 1024
@@ -217,11 +268,14 @@ def cli() -> None:
                 size=1,
             ),
         )
-
+        sortkind = "Size" if o_data.sorted_by_size else "Addr"
         layout["u"].update(grid)
         layout["l"].update(
             Text(
-                "  W/S: Move between sections | E/D: Scroll symbol table | Esc: Exit  ",
+                "  W/S: Move between sections | "
+                "E/D: Scroll symbol table | "
+                "Esc: Exit | "
+                f"Sorted by (Q): {sortkind} ",
                 style="black on white",
             ),
         )
@@ -232,19 +286,24 @@ def cli() -> None:
         o_data.update_objs_per_page(live.console)
         live.update(whole_thing(o_data), refresh=True)
         while True:
-
             if key := get_key():
-                if key == ord('w'):
+                if key == ord("w"):
                     o_data.prev_section()
                     live.update(whole_thing(o_data), refresh=True)
-                elif key == ord('s'):
+                elif key == ord("s"):
                     o_data.next_section()
                     live.update(whole_thing(o_data), refresh=True)
-                elif key == ord('e'):
+                elif key == ord("e"):
                     o_data.prev_object_page()
                     live.update(whole_thing(o_data), refresh=True)
-                elif key == ord('d'):
+                elif key == ord("d"):
                     o_data.next_object_page()
+                    live.update(whole_thing(o_data), refresh=True)
+                elif key == ord("q"):
+                    if o_data.sorted_by_size:
+                        o_data.sort_by_addr()
+                    else:
+                        o_data.sort_by_size()
                     live.update(whole_thing(o_data), refresh=True)
                 elif key == 27:  # Escape
                     live.update("", refresh=True)
