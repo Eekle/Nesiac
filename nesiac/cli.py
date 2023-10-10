@@ -44,7 +44,7 @@ class InteractiveRegions:
 
     def update_objs_per_page(self, con: Console):
         old = self.objects_per_page
-        self.objects_per_page = con.height - 10
+        self.objects_per_page = max(con.height - 10, 1)
         if old != self.objects_per_page:
             self.object_page = 0
 
@@ -273,7 +273,7 @@ def cli() -> None:
         )
         return layout
 
-    with Live(Layout(), auto_refresh=False) as live:
+    with Live("", auto_refresh=False) as live:
         last_size = live.console.size
         o_data.update_objs_per_page(live.console)
         def render():
