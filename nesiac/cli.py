@@ -1,4 +1,3 @@
-from functools import partial
 import time
 from rich.layout import Layout
 from rich.live import Live
