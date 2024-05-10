@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nesiac"
-version = "0.4.2"
+version = "0.4.3"
 description = "Memory usage visualiser for embedded applications"
 authors = ["Eekle"]
 license = "MIT"
@@ -15,7 +15,7 @@ classifiers = [
 python = "^3.9"
 rich = "^13.6.0"
 pyelftools = "^0.30"
-cpp-demangle = "^0.1.2"
+cxxfilt = "^0.3.0"
 rust-demangler = "^1.0"
 getchlib = "^1.0.12"
 

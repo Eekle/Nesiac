@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 import pathlib
 from elftools.elf.elffile import ELFFile, SymbolTableSection
-import cpp_demangle
+import cxxfilt
 import rust_demangler
+
 
 @dataclass(frozen=True)
 class ElfObject:
@@ -10,13 +11,14 @@ class ElfObject:
     size: int
     name: str
 
+
 def _demangle(input: str) -> str:
     try:
         rust_d = rust_demangler.demangle(input)
     except Exception:
         rust_d = None
     try:
-        cpp_d = cpp_demangle.demangle(input)
+        cpp_d = cxxfilt.demangle(input)
     except Exception:
         cpp_d = None
     return rust_d or cpp_d or input
@@ -32,6 +34,7 @@ def from_elf(file: pathlib.Path) -> list[ElfObject]:
         for sym in symtab.iter_symbols():
             if sym.entry.st_info.type in ["STT_OBJECT", "STT_FUNC"]:
                 outlist.append(
-                    ElfObject(sym.entry.st_value, sym.entry.st_size, _demangle(sym.name))
+                    ElfObject(sym.entry.st_value, sym.entry.st_size,
+                              _demangle(sym.name))
                 )
     return outlist
