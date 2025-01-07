@@ -1,15 +1,13 @@
 [tool.poetry]
 name = "nesiac"
-version = "0.4.3"
+version = "0.4.4"
 description = "Memory usage visualiser for embedded applications"
 authors = ["Eekle"]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/Eekle/Nesiac/"
 keywords = ["embedded", "elf", "binary", "memory"]
-classifiers = [
-    "Topic :: Software Development :: Embedded Systems",
-]
+classifiers = ["Topic :: Software Development :: Embedded Systems"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
