@@ -114,7 +114,11 @@ class InteractiveRegions:
                     self.object_page = 0
 
     def reg_section_text(self, reg: ingest.RegionWithSections) -> Text:
-        fullness = reg.used_mem() / reg.data.length
+        if reg.data.length == 0:
+            fullness = 0
+        else:
+            fullness = reg.used_mem() / reg.data.length
+
         if fullness > 0.9:
             pc_colour = "bright_red"
         elif fullness > 0.75:
